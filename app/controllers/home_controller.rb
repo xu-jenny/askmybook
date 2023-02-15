@@ -19,12 +19,17 @@ class HomeController < ApplicationController
         @question_embedding = OpenaiClient.get_embedding(@question) 
         answer = helpers.find_similiar_question(@question_embedding)
         if answer != nil
-            Question.update_similiarq(@question, answer)
+            Thread.start {
+                Question.update_similiarq(@question, answer)
+            }
             return render json: { answer: answer }
         end
 
         answer = helpers.ask(@question, $embedding, @question_embedding)
-        Question.create_question(@question, answer, @question_embedding)
+        Thread.start {
+            Question.create_question(@question, answer, @question_embedding)
+            Rails.cache.write(@question, answer, expires_in: 1.minute)
+        }
         return render json: { answer: answer }
     end
     def ask_params

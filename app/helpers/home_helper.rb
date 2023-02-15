@@ -18,6 +18,12 @@ module HomeHelper
      ### FIND DUPLICATE QUESTION FUNCTIONS ###
 
      def find_existing_question(question)
+        # check if question exist in cache
+        q = Rails.cache.read(@question)
+        if q != nil
+            return q
+        end
+
         # check if question string exist in db
         q = Question.get(question)
         if q != nil
