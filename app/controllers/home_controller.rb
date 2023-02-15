@@ -7,7 +7,7 @@ class HomeController < ApplicationController
         else 
             $embedding = helpers.download_object(filepath, "minimalist_entrepreneur_embedding.csv")
         end
-        p "Finish loading embedding" $embedding.length()
+        p "Finish loading embedding", $embedding.length()
     end
     def ask
         answer = helpers.ask(ask_params[:question], $embedding)
