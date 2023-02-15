@@ -34,13 +34,13 @@ module HomeHelper
         return hash
     end
 
-    def get_embedding(text, model)
+    def get_embedding(text, model=EMBEDDING_MODEL)
         client.embeddings(
             parameters: {
                 model: model,
                 input: text
             }
-        )
+        )["data"][0]["embedding"]
     end
 
     def vector_similarity(x, y)
@@ -48,8 +48,7 @@ module HomeHelper
     end
 
     def order_document_sections_by_query_similarity(query, context)
-        data = get_embedding(query, EMBEDDING_MODEL)
-        query_embedding = data["data"][0]["embedding"]
+        query_embedding = get_embedding(query, EMBEDDING_MODEL)
         document_similarities = Hash.new()
         context.each do |key, page|
             sim = vector_similarity(query_embedding, page[0])

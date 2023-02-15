@@ -79,8 +79,8 @@ def load_embedding_csv(filepath)
     return hash
 end
 
-$embedding = load_embedding_csv("embedding.csv")
-puts order_document_sections_by_query_similarity("Is Gumroad Profitable?", $embedding)
+# $embedding = load_embedding_csv("embedding.csv")
+# puts order_document_sections_by_query_similarity("Is Gumroad Profitable?", $embedding)
 
 
 ### construct query prompt
