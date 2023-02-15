@@ -34,6 +34,7 @@ gem 'pdf-reader'
 gem 'ruby-openai'
 gem "matrix", "~> 0.4.2"
 gem "dotenv-rails"
+gem 'aws-sdk-s3', '~> 1.114'
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"

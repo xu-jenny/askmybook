@@ -5,6 +5,24 @@ module HomeHelper
 
     def client() = OpenAI::Client.new(access_token: ENV['OPENAI_ACCESS_TOKEN'])
 
+    def download_object(filename, objKey)
+        Aws.config.update(
+            region: 'us-east-1',
+            credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY'], ENV['AWS_SECRET_ACCESS_KEY'])
+        )
+        s3_client = Aws::S3::Client.new(region: 'us-east-1')
+        response = s3_client.list_objects_v2(bucket: 'askmybook')
+        response.contents.each do |object|
+            puts object.key
+        end
+
+        s3_client.get_object(
+            response_target: filename,
+            bucket: ENV['AWS_BUCKET_NAME'],
+            key: objKey
+        )
+    end
+
     def load_embedding_csv(filepath)
         embedding = CSV.read(filepath)
         hash = Hash.new()
