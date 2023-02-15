@@ -6,12 +6,14 @@ module HomeHelper
     def client() = OpenAI::Client.new(access_token: ENV['OPENAI_ACCESS_TOKEN'])
 
     def download_object(filename, objKey)
+        p "AWS CREDENTIALS"
+        p ENV['AWS_BUCKET_NAME']
         Aws.config.update(
             region: 'us-east-1',
             credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY'], ENV['AWS_SECRET_ACCESS_KEY'])
         )
         s3_client = Aws::S3::Client.new(region: 'us-east-1')
-        response = s3_client.list_objects_v2(bucket: 'askmybook')
+        response = s3_client.list_objects_v2(bucket: ENV['AWS_BUCKET_NAME'])
         response.contents.each do |object|
             puts object.key
         end

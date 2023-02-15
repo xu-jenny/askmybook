@@ -143,7 +143,7 @@ def ask(question, embedding)
     return answer["choices"][0]["text"]
 end
 
-$embedding = load_embedding_csv("./embeddings.csv")
-answer = ask("Is Gumroad Profitable?", $embedding)
-p answer
+# $embedding = load_embedding_csv("./embeddings.csv")
+# answer = ask("Is Gumroad Profitable?", $embedding)
+# p answer
 
