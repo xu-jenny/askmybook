@@ -41,6 +41,27 @@ module HomeHelper
             return q.answer
         end
         return nil
+
+        # check for similiar questions
+        q = Question.find_similiarq(question)
+        if q != nil
+            return q.answer
+        end
+        return nil
+    end
+
+    def find_similiar_question(question_embedding)
+        answers = []
+        Question.pluck(:embedding, :answer).each do |e|
+            sim = vector_similarity(e[0].split.map(&:to_f), question_embedding)
+            if sim > 0.95
+                answers << [sim, e[1]]
+            end
+        end
+        if answers.length() > 0
+            return answers.sort_by{|x,y|x}[0][1]
+        end
+        return nil
     end
 
     ### ASK QUESTION

@@ -17,6 +17,12 @@ class HomeController < ApplicationController
         end
         
         @question_embedding = helpers.get_embedding(@question)
+        answer = helpers.find_similiar_question(@question_embedding)
+        if answer != nil
+            Question.update_similiarq(@question, answer)
+            return render json: { answer: answer }
+        end
+
         answer = helpers.ask(@question, $embedding, @question_embedding)
         Question.create_question(@question, answer, @question_embedding)
         return render json: { answer: answer }

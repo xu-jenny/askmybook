@@ -13,4 +13,20 @@ class Question < ApplicationRecord
     def self.create_question(question, answer, question_embedding, similiarq="")
         Question.create({ question: question, answer: answer, embedding: question_embedding, similiarq: similiarq })
     end
+    def self.find_similiarq(question)
+        q = Question.where("similiarq LIKE ?", "%"+question+"%")
+        if q.any?
+            return q[0]
+        end
+        return nil
+    end
+    def self.update_similiarq(new_q, key)
+        # key is answer column
+        q = Question.find_by answer: key
+        puts "update_similiarq: q.include? new_q:", q.include? new_q
+        if !q.include? new_q
+            q.similiarq << new_q
+            q.save
+        end
+    end
 end
