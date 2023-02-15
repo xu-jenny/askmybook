@@ -1,13 +1,15 @@
 class HomeController < ApplicationController
     def load
-        q = Question.all()
-        puts q
-        render json: { data: q }
-    end
-    def index
         filepath = './embeddings.csv'
         $embedding = helpers.load_embedding_csv(filepath)
-        answer = helpers.ask("Is Gumroad Profitable?", $embedding)
+        p "Finish loading embedding"
+    end
+    def ask
+        answer = helpers.ask(ask_params[:question], $embedding)
         puts answer
+        render json: { answer: answer }
+    end
+    def ask_params
+        params.permit(:question)
     end
 end

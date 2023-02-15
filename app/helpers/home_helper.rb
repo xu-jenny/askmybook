@@ -54,8 +54,6 @@ module HomeHelper
             end
             chosen_sections << row[2]
         end
-        # puts "pages chosen: " + chosen_sections_indexes
-        # puts "number of tokens: " + chosen_sections_len
         return chosen_sections
     end
 
