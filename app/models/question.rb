@@ -24,9 +24,9 @@ class Question < ApplicationRecord
         # key is answer column
         q = Question.find_by answer: key
         puts "update_similiarq: q.include? new_q:", q.include? new_q
-        if !q.include? new_q
-            q.similiarq << new_q
-            q.save
-        end
+        # if !q.include? new_q
+        q.similiarq << new_q
+        q.save
+        # end
     end
 end

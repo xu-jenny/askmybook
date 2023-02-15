@@ -5,7 +5,7 @@ class HomeController < ApplicationController
         if File.file?(filepath)
             $embedding = helpers.load_embedding_csv(filepath)
         else 
-            $embedding = helpers.download_object(filepath, "minimalist_entrepreneur_embedding.csv")
+            $embedding = AwsClient.download_object(filepath, "minimalist_entrepreneur_embedding.csv")
         end
         p "Finish loading embedding", $embedding.length()
     end
