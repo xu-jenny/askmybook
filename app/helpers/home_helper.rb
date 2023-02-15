@@ -1,10 +1,4 @@
 module HomeHelper
-    include AskQuestionModule
-    EMBEDDING_MODEL="text-embedding-ada-002"
-    COMPLETIONS_MODEL = "text-davinci-003"
-    MAX_SECTION_LEN = 1000
-
-    def client() = OpenAI::Client.new(access_token: ENV['OPENAI_ACCESS_TOKEN'])
 
     def load_embedding_csv(filepath)
         embedding = CSV.read(filepath)
@@ -42,24 +36,27 @@ module HomeHelper
     def find_similiar_question(question_embedding)
         answers = []
         Question.pluck(:embedding, :answer).each do |e|
-            sim = vector_similarity(e[0].split.map(&:to_f), question_embedding)
-            if sim > 0.95
-                answers << [sim, e[1]]
+            if e[0].length() > 0
+                sim = AskQuestionUtil.vector_similarity(e[0].map(&:to_f), question_embedding)
+                if sim > 0.95
+                    answers << [sim, e[1]]
+                end
             end
         end
         if answers.length() > 0
+            p "similiar q found!",answers.sort_by{|x,y|x}[0][1]
             return answers.sort_by{|x,y|x}[0][1]
         end
         return nil
     end
 
-    ### ASK QUESTION
+    ### ASK QUESTION ###
 
     def ask(question, embedding, question_embedding=nil)
         if question_embedding == nil
             question_embedding = OpenaiClient.get_embedding(question)
         end
-        prompt = construct_promopt(question, embedding, question_embedding)
+        prompt = AskQuestionUtil.construct_promopt(question, embedding, question_embedding)
         answer = OpenaiClient.get_completion(prompt)
         return answer["choices"][0]["text"]
     end
