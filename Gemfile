@@ -32,6 +32,7 @@ gem "jbuilder"
 
 gem 'pdf-reader'
 gem 'ruby-openai'
+gem "matrix", "~> 0.4.2"
 gem "dotenv-rails"
 
 # Use Redis adapter to run Action Cable in production
