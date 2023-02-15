@@ -66,15 +66,6 @@ module HomeHelper
 
     ### ASK QUESTION
 
-    def get_embedding(text, model=EMBEDDING_MODEL)
-        client.embeddings(
-            parameters: {
-                model: model,
-                input: text
-            }
-        )["data"][0]["embedding"]
-    end
-
     def vector_similarity(x, y)
         return Vector.send(:new, x).inner_product(Vector.send(:new, y))
     end
@@ -115,21 +106,12 @@ module HomeHelper
         return prompt
     end
 
-    def ask_question(prompt)
-        return client.completions(
-            parameters: {
-                prompt: prompt,
-                temperature: 0.0,
-                max_tokens: 300,
-                model: COMPLETIONS_MODEL,
-            }
-        )
-    end
-
-    def ask(question, embedding, question_embedding)
+    def ask(question, embedding, question_embedding=nil)
+        if question_embedding == nil
+            question_embedding = OpenaiClient.get_embedding(question)
+        end
         prompt = construct_query_promopt(question, embedding, question_embedding)
-        answer = ask_question(prompt)
-        puts prompt
+        answer = OpenaiClient.get_completion(prompt)
         return answer["choices"][0]["text"]
     end
 

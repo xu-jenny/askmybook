@@ -16,7 +16,7 @@ class HomeController < ApplicationController
             return render json: { answer: answer }
         end
         
-        @question_embedding = helpers.get_embedding(@question)
+        @question_embedding = OpenaiClient.get_embedding(@question) 
         answer = helpers.find_similiar_question(@question_embedding)
         if answer != nil
             Question.update_similiarq(@question, answer)
