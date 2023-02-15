@@ -6,8 +6,6 @@ module HomeHelper
     def client() = OpenAI::Client.new(access_token: ENV['OPENAI_ACCESS_TOKEN'])
 
     def download_object(filename, objKey)
-        p "AWS CREDENTIALS"
-        p ENV['AWS_BUCKET_NAME']
         Aws.config.update(
             region: 'us-east-1',
             credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY'], ENV['AWS_SECRET_ACCESS_KEY'])
@@ -34,6 +32,19 @@ module HomeHelper
         return hash
     end
 
+     ### FIND DUPLICATE QUESTION FUNCTIONS ###
+
+     def find_existing_question(question)
+        # check if question string exist in db
+        q = Question.get(question)
+        if q != nil
+            return q.answer
+        end
+        return nil
+    end
+
+    ### ASK QUESTION
+
     def get_embedding(text, model=EMBEDDING_MODEL)
         client.embeddings(
             parameters: {
@@ -47,11 +58,10 @@ module HomeHelper
         return Vector.send(:new, x).inner_product(Vector.send(:new, y))
     end
 
-    def order_document_sections_by_query_similarity(query, context)
-        query_embedding = get_embedding(query, EMBEDDING_MODEL)
+    def order_document_sections_by_query_similarity(question_embedding, context)
         document_similarities = Hash.new()
         context.each do |key, page|
-            sim = vector_similarity(query_embedding, page[0])
+            sim = vector_similarity(question_embedding, page[0])
             document_similarities[key] = sim
         end
         sorted_docs = document_similarities.sort_by {|k,v| v}
@@ -76,8 +86,8 @@ module HomeHelper
         return chosen_sections
     end
 
-    def construct_query_promopt(embedding, question)
-        most_relevant_document_sections = order_document_sections_by_query_similarity(question, embedding)
+    def construct_query_promopt(question, embedding, question_embedding)
+        most_relevant_document_sections = order_document_sections_by_query_similarity(question_embedding, embedding)
         chosen_sections = choose_sections(embedding, most_relevant_document_sections)
         header = """Sahil Lavingia is the founder and CEO of Gumroad, and the author of the book The Minimalist Entrepreneur (also known as TME). These are questions and answers by him. Please keep your answers to three sentences maximum, and speak in complete sentences. Stop speaking once your point is made.\n\nContext that may be useful, pulled from The Minimalist Entrepreneur:\n"""
         prompt = header + chosen_sections.join('')  + "\n\n Q: " + question + "\n A:"
@@ -95,8 +105,8 @@ module HomeHelper
         )
     end
 
-    def ask(question, embedding)
-        prompt = construct_query_promopt(embedding, question)
+    def ask(question, embedding, question_embedding)
+        prompt = construct_query_promopt(question, embedding, question_embedding)
         answer = ask_question(prompt)
         puts prompt
         return answer["choices"][0]["text"]

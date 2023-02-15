@@ -11,10 +11,15 @@ class HomeController < ApplicationController
     end
     def ask
         @question = Question.process_question(ask_params[:question])
+        answer = helpers.find_existing_question(@question)
+        if answer != nil
+            return render json: { answer: answer }
+        end
+        
         @question_embedding = helpers.get_embedding(@question)
-        answer = helpers.ask(ask_params[:question], $embedding)
+        answer = helpers.ask(@question, $embedding, @question_embedding)
         Question.create_question(@question, answer, @question_embedding)
-        render json: { answer: answer }
+        return render json: { answer: answer }
     end
     def ask_params
         params.permit(:question)
