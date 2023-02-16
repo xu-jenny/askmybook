@@ -10,9 +10,11 @@ class HomeController < ApplicationController
     end
     def ask
         @question = Question.process_question(ask_params[:question])
-        answer = helpers.find_existing_question(@question)
-        if answer != nil
-            return render json: { answer: answer }
+        q = helpers.find_existing_question(@question)
+        if q != nil
+            # it's possible the occurance includes the time user just asked, if Question.increment_count call finishes before this return. there's no way to know for sure which will finish first.
+            # I decided it was okay to upcount by 1 the count accuracy is not as important as code simplicty and performance of using threads.
+            return render json: { answer: q.answer, occurance: q.occurance }    
         end
         
         @question_embedding = OpenaiClient.get_embedding(@question) 
@@ -21,7 +23,8 @@ class HomeController < ApplicationController
             Thread.start {
                 Question.update_similiarq(@question, answer)
             }
-            return render json: { answer: answer }
+            q = Question.find_by answer: answer
+            return render json: { answer: answer, occurance: q.occurance }
         end
 
         answer = helpers.ask(@question, $embedding, @question_embedding)

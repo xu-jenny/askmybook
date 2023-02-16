@@ -11,7 +11,7 @@ class Question < ApplicationRecord
         return Question.find_by question: question
     end
     def self.create_question(question, answer, question_embedding, similiarq="")
-        Question.create({ question: question, answer: answer, embedding: question_embedding, similiarq: similiarq })
+        Question.create({ question: question, answer: answer, embedding: question_embedding, similiarq: similiarq, occurance: 1})
     end
     def self.find_similiarq(question)
         q = Question.where("similiarq LIKE ?", "%"+question+"%")
@@ -24,6 +24,11 @@ class Question < ApplicationRecord
         # key is answer column
         q = Question.find_by answer: key
         q.similiarq << new_q
+        q.occurance += 1
+        q.save
+    end
+    def self.increment_count(q)
+        q.occurance += 1
         q.save
     end
 end

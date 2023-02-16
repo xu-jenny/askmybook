@@ -13,6 +13,7 @@ function PrimaryButton(props) {
 export default () => {
   const [question, setQuestion] = useState("What is The Minimalist Entrepreneur about?")
   const [answer, setAnswer] = useState(null)
+  const [answerOccurance, setAnswerOccurance] = useState(0)
   const [answerState, setAnswerState] = useState('NONE')
 
   React.useEffect(() => {
@@ -35,6 +36,7 @@ export default () => {
         return <>
           <p className="font-bold">Answer: </p> <br />
           <p className="font-mono py-1">{answer}</p> <br />
+          {answerOccurance != 0 && <p className="font-mono pb-4">This question has been asked {answerOccurance} {answerOccurance == 1 ? 'time' : 'times'} total.<br /></p>}
           <PrimaryButton className="" text="Ask another Question" onClick={handleAnotherQ} />
         </>
     }
@@ -61,7 +63,11 @@ export default () => {
       },
     })
     const data = await response.json()
+    console.log(data)
     setAnswer(data.answer)
+    if(data.occurance != null){
+      setAnswerOccurance(data.occurance)
+    }
     setAnswerState('ANSWER')
   }
 

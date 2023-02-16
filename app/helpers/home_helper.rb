@@ -13,21 +13,31 @@ module HomeHelper
 
      def find_existing_question(question)
         # check if question exist in cache
-        q = CacheClient.get_question(@question)
-        if q != nil
+        answer = CacheClient.get_question(@question)
+        if answer != nil
+            q = Question.find_by answer: answer
+            Thread.start {
+                Question.increment_count(q)
+            }
             return q
         end
 
         # check if question string exist in db
         q = Question.get(question)
         if q != nil
-            return q.answer
+            Thread.start {
+                Question.increment_count(q)
+            }
+            return q
         end
 
         # check for similiar questions
         q = Question.find_similiarq(question)
         if q != nil
-            return q.answer
+            Thread.start {
+                Question.increment_count(q)
+            }
+            return q
         end
         return nil
     end
