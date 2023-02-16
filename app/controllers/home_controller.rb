@@ -1,12 +1,10 @@
 class HomeController < ApplicationController
     def load
         filepath = './embeddings.csv'
-        p "embedding file exists?", File.file?(filepath)
         if !File.file?(filepath) 
             AwsClient.download_object(filepath, "minimalist_entrepreneur_embedding.csv")
         end
         $embedding = helpers.load_embedding_csv(filepath)
-        p "Finish loading embedding", $embedding.length()
     end
     def ask
         @question = Question.process_question(ask_params[:question])
@@ -17,7 +15,7 @@ class HomeController < ApplicationController
             return render json: { answer: q.answer, occurance: q.occurance }    
         end
         
-        @question_embedding = OpenaiClient.get_embedding(@question) 
+        @question_embedding = OpenaiClient.get_embedding(@question)     # this call normall takes around 1000ms
         answer = helpers.find_similiar_question(@question_embedding)
         if answer != nil
             Thread.start {
@@ -27,7 +25,7 @@ class HomeController < ApplicationController
             return render json: { answer: answer, occurance: q.occurance }
         end
 
-        answer = helpers.ask(@question, $embedding, @question_embedding)
+        answer = helpers.ask(@question, $embedding, @question_embedding)    # this call takes about 4000ms
         Thread.start {
             Question.create_question(@question, answer, @question_embedding)
             CacheClient.write_question(@question, answer)
