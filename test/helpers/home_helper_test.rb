@@ -5,6 +5,4 @@ class HomeHelperTest < ActionView::TestCase
     result = AskQuestionUtil.vector_similarity([1,1,1], [2,2,2])
     assert_equal result, 6
   end
-
-  
 end
