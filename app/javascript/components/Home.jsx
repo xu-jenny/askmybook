@@ -29,15 +29,22 @@ export default () => {
       case 'LOADING':
         return <>
           <p className="font-bold">Answer: </p> <br />
-          <div class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"></div>
+          <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"></div>
         </>
       case 'ANSWER':
         return <>
           <p className="font-bold">Answer: </p> <br />
-          <p className="font-mono py-1">This is my answer long This is my answer longThis is my answer longThis is my answer longThis is my answer long</p> <br />
-          <PrimaryButton className="" text="Ask another Question" onClick={handleSubmit} />
+          <p className="font-mono py-1">{answer}</p> <br />
+          <PrimaryButton className="" text="Ask another Question" onClick={handleAnotherQ} />
         </>
     }
+  }
+
+  const handleAnotherQ = () => {
+    var textarea = document.getElementById("questionInput");
+    textarea.focus()
+    textarea.select()
+    setAnswerState('NONE')
   }
 
   const token = document.querySelector('meta[name="csrf-token"]').content
@@ -53,9 +60,7 @@ export default () => {
         'Content-Type': 'application/json'
       },
     })
-    console.log(response.body)
     const data = await response.json()
-    console.log(data)
     setAnswer(data.answer)
     setAnswerState('ANSWER')
   }
@@ -69,6 +74,7 @@ export default () => {
       <h1 className="p-4 text-2xl font-bold">Ask My Book</h1>
       <div className="w-1/3 flex items-center justify-center flex-col ml-auto mr-auto">
         <textarea rows="3"
+          id="questionInput"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           className="font-mono block m-4 p-2.5 w-full text-md text-black bg-gray-50 rounded-lg border border-black focus:text-sky-500 focus:border-blue-500"

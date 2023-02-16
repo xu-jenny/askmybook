@@ -13,7 +13,7 @@ module HomeHelper
 
      def find_existing_question(question)
         # check if question exist in cache
-        q = Rails.cache.read(@question)
+        q = CacheClient.get_question(@question)
         if q != nil
             return q
         end
@@ -23,7 +23,6 @@ module HomeHelper
         if q != nil
             return q.answer
         end
-        return nil
 
         # check for similiar questions
         q = Question.find_similiarq(question)
@@ -38,6 +37,7 @@ module HomeHelper
         Question.pluck(:embedding, :answer).each do |e|
             if e[0].length() > 0
                 sim = AskQuestionUtil.vector_similarity(e[0].map(&:to_f), question_embedding)
+                p sim, e[1]
                 if sim > 0.95
                     answers << [sim, e[1]]
                 end

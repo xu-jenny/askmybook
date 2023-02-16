@@ -42,9 +42,30 @@ end
 # question2="when did you start gumroad?"
 # 0.9524197543040651
 
+# question1="What is The Minimalist Entrepreneur about?"
+# question2="What's a summary of The Minimalist Entrepreneur?"
+# 0.9593574500431061
+
+# these 3 questions all have vector_similarity of less than 0.95
+#tell me about the author of the minimalist entrepreneur?
+#tell me about sahil lavingia, the author?
+#tell me about sahil lavingia, the author of the minimalist entrepreneur?
+
+
+
 e1 = get_embedding(question1)
 e2 = get_embedding(question2)
 
 puts e1.length()
 puts e2.length()
 puts vector_similarity(e1, e2)
+
+# Tell me if the question I asked exist in the questions list. If it exists, say "Yes" and tell me the corresponding question. If not, tell me "No" and the reason you think it doesn't exsit in the questions list. Here is the questions list:
+# 1. tell me about the author of the minimalist entrepreneur
+# 2. is gumroad profitable?
+
+# Q: does this question exsit in the questions list? "tell me about sahil lavingia, the author of the minimalist entrepreneur"
+# A: Yes. The corresponding question is "tell me about the author of the minimalist entrepreneur".
+
+# Q: does this question exsit in the questions list? "is gumroad making money"
+# A: No. The question does not exist in the questions list because it is not phrased the same as the questions in the list.

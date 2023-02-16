@@ -2,11 +2,10 @@ class HomeController < ApplicationController
     def load
         filepath = './embeddings.csv'
         p "embedding file exists?", File.file?(filepath)
-        if File.file?(filepath)
-            $embedding = helpers.load_embedding_csv(filepath)
-        else 
-            $embedding = AwsClient.download_object(filepath, "minimalist_entrepreneur_embedding.csv")
+        if !File.file?(filepath) 
+            AwsClient.download_object(filepath, "minimalist_entrepreneur_embedding.csv")
         end
+        $embedding = helpers.load_embedding_csv(filepath)
         p "Finish loading embedding", $embedding.length()
     end
     def ask
@@ -28,7 +27,7 @@ class HomeController < ApplicationController
         answer = helpers.ask(@question, $embedding, @question_embedding)
         Thread.start {
             Question.create_question(@question, answer, @question_embedding)
-            Rails.cache.write(@question, answer, expires_in: 1.minute)
+            CacheClient.write_question(@question, answer)
         }
         return render json: { answer: answer }
     end
