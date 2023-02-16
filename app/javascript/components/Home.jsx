@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 
 const OutputState = 'LOADING' | 'ANSWER' | 'NONE'   // this can be used to typecheck answerState if we enable typescript 
+const COVER_URL = 'https://m.media-amazon.com/images/I/711KXUuHfbL._AC_UF1000,1000_QL80_.jpg'
 
+// normally I will separate this to a different file, but since the entire app is pretty small, I decided to keep everything in one place for readability
 function PrimaryButton(props) {
   return <button
     onClick={props.onClick}
@@ -63,7 +65,6 @@ export default () => {
       },
     })
     const data = await response.json()
-    console.log(data)
     setAnswer(data.answer)
     if(data.occurance != null){
       setAnswerOccurance(data.occurance)
@@ -74,7 +75,7 @@ export default () => {
   return (
     <div className="flex items-center justify-center flex-col font-sans">
       <div className="w-1/6 p-6 m-4">
-        <img src="https://m.media-amazon.com/images/I/711KXUuHfbL._AC_UF1000,1000_QL80_.jpg" alt="..."
+        <img src={COVER_URL} alt="..."
           className="shadow rounded max-w-full h-auto align-middle border-2" />
       </div>
       <h1 className="p-4 text-2xl font-bold">Ask My Book</h1>

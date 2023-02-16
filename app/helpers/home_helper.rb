@@ -1,5 +1,4 @@
 module HomeHelper
-
     def load_embedding_csv(filepath)
         embedding = CSV.read(filepath)
         hash = Hash.new()
@@ -47,14 +46,12 @@ module HomeHelper
         Question.pluck(:embedding, :answer).each do |e|
             if e[0].length() > 0
                 sim = AskQuestionUtil.vector_similarity(e[0].map(&:to_f), question_embedding)
-                p sim, e[1]
                 if sim > 0.95
                     answers << [sim, e[1]]
                 end
             end
         end
         if answers.length() > 0
-            p "similiar q found!",answers.sort_by{|x,y|x}[0][1]
             return answers.sort_by{|x,y|x}[0][1]
         end
         return nil
