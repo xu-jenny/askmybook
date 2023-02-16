@@ -12,9 +12,9 @@ class AwsClient
     @s3_client = Aws::S3::Client.new(region: 'us-east-1')
 
     def self.download_object(filename, objKey)
-        s3_client.get_object(
+        @s3_client.get_object(
             response_target: filename,
-            bucket: bucketName,
+            bucket: BUCKET,
             key: objKey
         )
     end
